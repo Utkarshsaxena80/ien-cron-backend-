@@ -1,0 +1,20 @@
+# Node Dependencies
+node_modules/
+
+# Environment Variables
+.env
+.env.local
+.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# Playwright Test Artifacts
+test-results/
+playwright-report/
+.playwright/
+
+# OS Junk
+.DS_Store
+Thumbs.db

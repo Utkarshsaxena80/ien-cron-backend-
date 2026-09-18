@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: price-tracker-backend
+    env: node
+    buildCommand: npm install && npx playwright install chromium
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: STOREFRONT_BASE_URL
+        value: https://demo.inelabteamdev.com
+      - key: SCRAPER_TIMEOUT_MS
+        value: 15000
+      - key: SCRAPER_MAX_RETRIES
+        value: 3
+      - key: CRON_SECRET
+        generateValue: true
