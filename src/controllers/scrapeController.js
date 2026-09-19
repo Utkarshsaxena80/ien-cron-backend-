@@ -10,7 +10,6 @@ const CRON_SECRET = process.env.CRON_SECRET;
  * Endpoint called by cron-job.org or manual dashboard button
  */
 async function runBatchScrape(req, res) {
-  // Optional CRON_SECRET Authorization check
   if (CRON_SECRET && CRON_SECRET !== 'dev-cron-secret-12345') {
     const authHeader = req.headers.authorization || '';
     const token = authHeader.replace(/^Bearer\s+/i, '').trim();
@@ -22,18 +21,30 @@ async function runBatchScrape(req, res) {
     }
   }
 
+  res.status(202).json({
+    message: 'Batch scrape started',
+    timestamp: new Date().toISOString()
+  });
+
+  runBatchScrapeJob().catch(err => {
+    console.error('[ScrapeController] Background batch scrape failed:', err.message);
+  });
+}
+
+async function runBatchScrapeJob() {
   try {
     // 1. Fetch active tracked products
     const activeProducts = await db.getTrackedProducts(true);
 
     if (!activeProducts || activeProducts.length === 0) {
-      return res.json({
+      console.log('[ScrapeController] No active products found to scrape.');
+      return {
         total: 0,
         successful: 0,
         failed: 0,
         retried: 0,
-        message: 'No active products found to scrape.',
-      });
+        message: 'No active products found to scrape.'
+      };
     }
 
     console.log(`[ScrapeController] Starting batch scrape for ${activeProducts.length} active products...`);
@@ -90,16 +101,16 @@ async function runBatchScrape(req, res) {
 
     console.log(`[ScrapeController] Batch scrape complete. Total: ${activeProducts.length} | Success: ${successfulCount} | Failed: ${failedCount}`);
 
-    return res.json({
+    return {
       total: activeProducts.length,
       successful: successfulCount,
       failed: failedCount,
       retried: retriedCount,
       timestamp: new Date().toISOString()
-    });
+    };
   } catch (err) {
     console.error('[ScrapeController] Batch scrape error:', err.message);
-    return res.status(500).json({ error: 'Batch scrape failed', details: err.message });
+    throw err;
   }
 }
 
