@@ -2,7 +2,7 @@ services:
   - type: web
     name: price-tracker-backend
     env: node
-    buildCommand: npm install && npx playwright install chromium
+    buildCommand: npm ci && PLAYWRIGHT_BROWSERS_PATH=0 npx playwright install --with-deps chromium
     startCommand: npm start
     envVars:
       - key: PORT
@@ -15,3 +15,5 @@ services:
         value: 3
       - key: CRON_SECRET
         generateValue: true
+      - key: PLAYWRIGHT_BROWSERS_PATH
+        value: "0"
