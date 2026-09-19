@@ -33,7 +33,6 @@ async function runBatchScrape(req, res) {
         failed: 0,
         retried: 0,
         message: 'No active products found to scrape.',
-        results: []
       });
     }
 
@@ -96,8 +95,7 @@ async function runBatchScrape(req, res) {
       successful: successfulCount,
       failed: failedCount,
       retried: retriedCount,
-      timestamp: new Date().toISOString(),
-      results
+      timestamp: new Date().toISOString()
     });
   } catch (err) {
     console.error('[ScrapeController] Batch scrape error:', err.message);
